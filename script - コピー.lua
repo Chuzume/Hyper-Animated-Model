@@ -846,6 +846,211 @@ end
         return {lerp(a[1],b[1],x),lerp(a[2],b[2],x),lerp(a[3],b[3],x)}
     end
 
+-- テクスチャの大きさ
+    texture_height = 128
+    texture_width = 256
+
+-- カスタム鎧(by dragekk)
+armor = {
+    head = { model.Body.MIMIC_HEAD.offset.Helmet },
+    chest = { model.Body.Chestplate, model.Body.RightArm.Chestplate, model.Body.LeftArm.Chestplate, model.Body.RightArm.RightHand.Chestplate, model.Body.LeftArm.LeftHand.Chestplate, model.MIMIC_RIGHT_ARM_fps.cubeChestplate },
+    elytra = { model.Body.RIGHT_ELYTRA, model.Body.LEFT_ELYTRA },
+    legs = { model.Body.Leggings, model.Body.LeftLeg.Leggings, model.Body.RightLeg.Leggings ,model.Body.LeftLeg.LeftFoot.Leggings, model.Body.RightLeg.RightFoot.Leggings},
+    boots = { model.Body.LeftLeg.LeftFoot.Boots, model.Body.RightLeg.RightFoot.Boots}
+    }
+
+--custom armor function
+    function update_armor(armor_table, x, table_vector)
+        for key, value in pairs(armor_table) do
+            value[x](table_vector)
+        end
+    end
+    
+    function tick()
+        custom_armor()
+    end
+    
+    function custom_armor()
+        local boots = player.getEquipmentItem(3).getType()
+        local legs = player.getEquipmentItem(4).getType()
+        local chest = player.getEquipmentItem(5).getType()
+        local head = player.getEquipmentItem(6).getType()
+
+    --If no helmet
+    update_armor(armor.head, "setColor", {1, 1, 1})
+    if head == "minecraft:air" then
+        update_armor(armor.head, "setEnabled", false)
+    else
+        update_armor(armor.head, "setEnabled", true)
+
+    end
+
+    --Check enchant
+        if player.getEquipmentItem(6).hasGlint() then
+            update_armor(armor.head, "setShader", "Glint")
+        else
+            update_armor(armor.head, "setShader", "None")
+        end
+    
+    -- ヘルメット
+    if head == "minecraft:turtle_helmet" then
+        model.Body.MIMIC_HEAD.offset.Helmet.setTexture("Resource", "minecraft:textures/models/armor/turtle_layer_1.png")    
+    elseif head == "minecraft:netherite_helmet" then
+        model.Body.MIMIC_HEAD.offset.Helmet.setTexture("Resource", "minecraft:textures/models/armor/netherite_layer_1.png")
+    elseif head == "minecraft:diamond_helmet" then
+        model.Body.MIMIC_HEAD.offset.Helmet.setTexture("Resource", "minecraft:textures/models/armor/diamond_layer_1.png")
+    elseif head == "minecraft:iron_helmet" then
+        model.Body.MIMIC_HEAD.offset.Helmet.setTexture("Resource", "minecraft:textures/models/armor/iron_layer_1.png")
+    elseif head == "minecraft:golden_helmet" then
+        model.Body.MIMIC_HEAD.offset.Helmet.setTexture("Resource", "minecraft:textures/models/armor/gold_layer_1.png")
+    elseif head == "minecraft:chainmail_helmet" then
+        model.Body.MIMIC_HEAD.offset.Helmet.setTexture("Resource", "minecraft:textures/models/armor/chainmail_layer_1.png")
+    elseif head == "minecraft:leather_helmet" then
+        model.Body.MIMIC_HEAD.offset.Helmet.setTexture("Resource", "minecraft:textures/models/armor/leather_layer_1.png")
+        if player.getEquipmentItem(6).getTag() ~= nil and player.getEquipmentItem(6).getTag().display ~= nil and player.getEquipmentItem(6).getTag().display.color ~= nil then
+            update_armor(armor.head, "setColor", vectors.intToRGB(player.getEquipmentItem(6).getTag().display.color))
+        else
+            update_armor(armor.head, "setColor", {134/255 , 82/255 , 53/255})
+        end
+    end
+    
+    --chest
+        update_armor(armor.chest, "setColor", {1, 1, 1})
+        if chest == "minecraft:air" or chest == "minecraft:elytra" then
+            update_armor(armor.chest, "setEnabled", false)
+        else
+            update_armor(armor.chest, "setEnabled", true)
+        end
+    
+        if player.getEquipmentItem(5).hasGlint() then
+            update_armor(armor.chest, "setShader", "Glint")
+            update_armor(armor.elytra, "setShader", "Glint")
+        else
+            update_armor(armor.chest, "setShader", "None")
+            update_armor(armor.elytra, "setShader", "None")
+        end
+    
+        if chest == "minecraft:netherite_chestplate" then
+            model.Body.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/netherite_layer_1.png")    
+            model.Body.LeftArm.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/netherite_layer_1.png")
+            model.Body.LeftArm.LeftHand.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/netherite_layer_1.png")
+            model.Body.RightArm.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/netherite_layer_1.png")
+            model.Body.RightArm.RightHand.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/netherite_layer_1.png")
+            model.MIMIC_RIGHT_ARM_fps.cubeChestplate.setTexture("Resource", "minecraft:textures/models/armor/netherite_layer_1.png")        
+        
+        elseif chest == "minecraft:diamond_chestplate" then
+            model.Body.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/diamond_layer_1.png")    
+            model.Body.LeftArm.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/diamond_layer_1.png")
+            model.Body.LeftArm.LeftHand.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/diamond_layer_1.png")
+            model.Body.RightArm.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/diamond_layer_1.png")
+            model.Body.RightArm.RightHand.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/diamond_layer_1.png")
+            model.MIMIC_RIGHT_ARM_fps.cubeChestplate.setTexture("Resource", "minecraft:textures/models/armor/diamond_layer_1.png")
+
+        elseif chest == "minecraft:iron_chestplate" then
+            model.Body.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/iron_layer_1.png")    
+            model.Body.LeftArm.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/iron_layer_1.png")
+            model.Body.LeftArm.LeftHand.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/iron_layer_1.png")
+            model.Body.RightArm.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/iron_layer_1.png")
+            model.Body.RightArm.RightHand.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/iron_layer_1.png")
+            model.MIMIC_RIGHT_ARM_fps.cubeChestplate.setTexture("Resource", "minecraft:textures/models/armor/iron_layer_1.png")
+
+        elseif chest == "minecraft:golden_chestplate" then
+            model.Body.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/gold_layer_1.png")    
+            model.Body.LeftArm.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/gold_layer_1.png")
+            model.Body.LeftArm.LeftHand.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/gold_layer_1.png")
+            model.Body.RightArm.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/gold_layer_1.png")
+            model.Body.RightArm.RightHand.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/gold_layer_1.png")
+            model.MIMIC_RIGHT_ARM_fps.cubeChestplate.setTexture("Resource", "minecraft:textures/models/armor/gold_layer_1.png")      
+
+        elseif chest == "minecraft:chainmail_chestplate" then
+            model.Body.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/chainmail_layer_1.png")    
+            model.Body.LeftArm.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/chainmail_layer_1.png")
+            model.Body.LeftArm.LeftHand.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/chainmail_layer_1.png")
+            model.Body.RightArm.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/chainmail_layer_1.png")
+            model.Body.RightArm.RightHand.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/chainmail_layer_1.png")
+            model.MIMIC_RIGHT_ARM_fps.cubeChestplate.setTexture("Resource", "minecraft:textures/models/armor/chainmail_layer_1.png")
+
+        elseif chest == "minecraft:leather_chestplate" then
+            model.Body.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/leather_layer_1.png")    
+            model.Body.LeftArm.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/leather_layer_1.png")
+            model.Body.LeftArm.LeftHand.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/leather_layer_1.png")
+            model.Body.RightArm.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/leather_layer_1.png")
+            model.Body.RightArm.RightHand.Chestplate.setTexture("Resource", "minecraft:textures/models/armor/leather_layer_1.png")
+            model.MIMIC_RIGHT_ARM_fps.cubeChestplate.setTexture("Resource", "minecraft:textures/models/armor/leather_layer_1.png")
+            if player.getEquipmentItem(5).getTag() ~= nil and player.getEquipmentItem(5).getTag().display ~= nil and player.getEquipmentItem(5).getTag().display.color ~= nil then
+                update_armor(armor.chest, "setColor", vectors.intToRGB(player.getEquipmentItem(5).getTag().display.color))
+            else
+                update_armor(armor.chest, "setColor", {134/255 , 82/255 , 53/255})
+            end
+        end
+    
+        --legs
+        update_armor(armor.legs, "setColor", {1, 1, 1})
+        if legs == "minecraft:air" or legs == "minecraft:elytra" then
+            update_armor(armor.legs, "setEnabled", false)
+        else
+            update_armor(armor.legs, "setEnabled", true)
+        end
+    
+        if player.getEquipmentItem(4).hasGlint() then
+            update_armor(armor.legs, "setShader", "Glint")
+        else
+            update_armor(armor.legs, "setShader", "None")
+        end
+    
+        if legs == "minecraft:netherite_leggings" then
+            update_armor(armor.legs, "setUV", {128/texture_width, 48/texture_height})
+        elseif legs == "minecraft:diamond_leggings" then
+            update_armor(armor.legs, "setUV", {128/texture_width, 0})
+        elseif legs == "minecraft:iron_leggings" then
+            update_armor(armor.legs, "setUV", {0, 0})
+        elseif legs == "minecraft:golden_leggings" then
+            update_armor(armor.legs, "setUV", {0, 48/texture_height})
+        elseif legs == "minecraft:chainmail_leggings" then
+            update_armor(armor.legs, "setUV", {64/texture_width, 0})
+        elseif legs == "minecraft:leather_leggings" then
+            update_armor(armor.legs, "setUV", {64/texture_width, 48/texture_height})
+            if player.getEquipmentItem(4).getTag() ~= nil and player.getEquipmentItem(4).getTag().display ~= nil and player.getEquipmentItem(4).getTag().display.color ~= nil then
+                update_armor(armor.legs, "setColor", vectors.intToRGB(player.getEquipmentItem(4).getTag().display.color))
+            else
+                update_armor(armor.legs, "setColor", {134/255 , 82/255 , 53/255})
+            end
+        end
+    
+        --boots
+        update_armor(armor.boots, "setColor", {1, 1, 1})
+        if boots == "minecraft:air" or boots == "minecraft:elytra" then
+            update_armor(armor.boots, "setEnabled", false)
+        else
+            update_armor(armor.boots, "setEnabled", true)
+        end
+    
+        if player.getEquipmentItem(3).hasGlint() then
+            update_armor(armor.boots, "setShader", "Glint")
+        else
+            update_armor(armor.boots, "setShader", "None")
+        end
+    
+        if boots == "minecraft:netherite_boots" then
+            update_armor(armor.boots, "setUV", {128/texture_width, 48/texture_height})
+        elseif boots == "minecraft:diamond_boots" then
+            update_armor(armor.boots, "setUV", {128/texture_width, 0})
+        elseif boots == "minecraft:iron_boots" then
+            update_armor(armor.boots, "setUV", {0, 0})
+        elseif boots == "minecraft:golden_boots" then
+            update_armor(armor.boots, "setUV", {0, 48/texture_height})
+        elseif boots == "minecraft:chainmail_boots" then
+            update_armor(armor.boots, "setUV", {64/texture_width, 0})
+        elseif boots == "minecraft:leather_boots" then
+            update_armor(armor.boots, "setUV", {64/texture_width, 48/texture_height})
+            if player.getEquipmentItem(3).getTag() ~= nil and player.getEquipmentItem(3).getTag().display ~= nil and player.getEquipmentItem(3).getTag().display.color ~= nil then
+                update_armor(armor.boots, "setColor", vectors.intToRGB(player.getEquipmentItem(3).getTag().display.color))
+            else
+                update_armor(armor.boots, "setColor", {134/255 , 82/255 , 53/255})
+            end
+        end
+    end
+
 -- 自分の姿を眺めながら遊べるカメラがほしい！
     action_wheel.SLOT_1.setTitle("Toggle Third Person Camera")
     action_wheel.SLOT_1.setItem("minecraft:ender_pearl")
