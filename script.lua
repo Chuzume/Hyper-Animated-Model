@@ -31,10 +31,7 @@
 
 --======CONFIG=======--
 -- I don suggest changing this one, because it can break the punching animation
-stiffness = 0.1 --the lower the value is, the smoother the blending between animation tracks is
--- if the player is using a slim skin
-isSlim = true
---note: dosent have to be the full name of the item, just a key word of it
+stiffness = 0.3 --the lower the value is, the smoother the blending between animation tracks is
 
 -- ツルハシタイプの振り方をするアイテム
     ToolSwing = {"shovel","hoe","pickaxe","shield"}
@@ -70,14 +67,23 @@ function player_init()
     end
 
 -- スキン適用
-    --model.Body.setTexture("Skin")
     model.Body.setTexture("Skin")
     model.MIMIC_RIGHT_ARM_fps.setTexture("Skin")
 
-    --model.Body.Chestplate.setTexture("Resource", "figura:model_files/AnimatedBody/texture.png")
+-- スキンタイプ確認
+    if player.getModelType() == "default" then
+        model.Body.RightArm.RightArmSlim.setEnabled(false)
+        model.Body.LeftArm.LeftArmSlim.setEnabled(false)
 
---boom boom pow
+        model.Body.RightArm.RightHand.RightHandSlim.setEnabled(false)
+        model.Body.LeftArm.LeftHand.LeftHandSlim.setEnabled(false)
+    else
+        model.Body.RightArm.RightArmNormal.setEnabled(false)
+        model.Body.LeftArm.LeftArmNormal.setEnabled(false)
 
+        model.Body.RightArm.RightHand.RightHandNormal.setEnabled(false)
+        model.Body.LeftArm.LeftHand.LeftHandNormal.setEnabled(false)
+    end
 
 -- アニメ補間に必要？
     pose = {
@@ -229,12 +235,12 @@ function isAttacking2()
             pose.footleft = {(math.sin(distWalked+math.rad(-(90*dotp(localVel.x+0.01))))*(45)-45)*moveMult,0,0}
             pose.legRight = {(math.sin(distWalked)*-80+20)*moveMult,0,1}
             pose.footRight = {(math.sin(distWalked+math.rad(-(90*dotp(localVel.x+0.01))))*-45-45)*moveMult,0,0}
-            pose.body = {localVel.x*-50-20,math.sin(distWalked)*5,localVel.z*70}
+            pose.body = {localVel.x*-50-20,math.sin(distWalked)*5,localVel.z*45}
             model.Body.setPos({0,-math.abs(math.sin(distWalked)),0})
-            pose.armLeft = {math.sin(distWalked)*-15*moveMult-45,0,-35}
-            pose.armRight = {math.sin(distWalked)*15*moveMult-45,0,35}
-            pose.handLeft = {(math.sin(distWalked-1)*-10+10)*moveMult,0,0}
-            pose.handRight = {(math.sin(distWalked-1)*10+10)*moveMult,0,0}
+            pose.armLeft = {math.sin(distWalked)*-45*moveMult,0,-15}
+            pose.armRight = {math.sin(distWalked)*45*moveMult,0,15}
+            pose.handLeft = {(math.sin(distWalked-1)*-10+35)*moveMult,0,0}
+            pose.handRight = {(math.sin(distWalked-1)*10+35)*moveMult,0,0}
         else
 
 -- 歩行アニメ
@@ -620,39 +626,6 @@ end
 
 --===========--
 
--- 右クリック動作(オフハンド)
---    if HandMovedThrow == false then
---        if ComboUse < 20 then--retracting arm
---            pose.armLeft[1] = 90
---            pose.armLeft[2] = -45
---            pose.armLeft[3] = -90
---            pose.handLeft[1] = 10
---            pose.body[2] = pose.body[2]- 45
---            pose.head[2] = pose.head[2]+ 45
---        end
---
---        if  ComboUse == 1 then--投げる直前
---            pose.handLeft[1] = 0
---            pose.armLeft = {-25,0,-90}
---            pose.handLeft[1] = 0
---        end
---    else--left hand punch
---        if ComboUse < 20 then--retracting arm
---            pose.handLeft[1] = 0
---            pose.armLeft = {-25,0,-90}
---            pose.handLeft[1] = 0
---            pose.body[2] = pose.body[2]+ 45
---            pose.head[2] = pose.head[2]- 25
---        end
---
---        if  ComboUse == 1 then--投げる直前
---            pose.armLeft[1] = 90
---            pose.armLeft[2] = -45
---            pose.armLeft[3] = -90
---            pose.handLeft[1] = 10
---        end
---    end
-
 -- もとに戻る
     if ComboPunch == 20 or ComboSword == 20 or ComboUse == 20 or ComboPickaxe == 20 then
         HandMoved = true
@@ -772,22 +745,7 @@ end
             pose.head[2] = 0
         end
     end
-    
--- オバケモード
-    if player.getGamemode() == "SPECTATOR" and GhostMode == 0 then
-        model.Body.MIMIC_HEAD.offset.setEnabled(false)
-        model.Body.MIMIC_HEAD.Ghost.setEnabled(true)
-        GhostMode = 1
-    end
 
--- オバケモード解除
-    if player.getGamemode() == "SPECTATOR" then 
-        else if GhostMode == 1 then
-            model.Body.MIMIC_HEAD.offset.setEnabled(true)
-            model.Body.MIMIC_HEAD.Ghost.setEnabled(false)
-            GhostMode = 0
-        end
-    end
 
 -- なにかはわからないけど重要らしい
         lastPos = player.getPos()
@@ -804,9 +762,9 @@ end
 
 --モデルのポーズ補間
     model.Body.MIMIC_HEAD.offset.setRot(tableLerp(model.Body.MIMIC_HEAD.offset.getRot(),pose.head,stiffness))
-        
+
     model.Body.setRot(tableLerp(model.Body.getRot(),pose.body,stiffness))
-        
+
     model.Body.LeftArm.setRot(tableLerp(model.Body.LeftArm.getRot(),pose.armLeft,stiffness))
     model.Body.RightArm.setRot(tableLerp(model.Body.RightArm.getRot(),pose.armRight,stiffness))
 
@@ -820,7 +778,6 @@ end
     model.Body.RightArm.RightHand.setRot(tableLerp(model.Body.RightArm.RightHand.getRot(),pose.handRight,stiffness))
 
 end
-
 --the "im too dumb to find them so I made my own" section
     function lenth3(vector)
         return math.sqrt(math.pow((vector.x),2)+math.pow((vector.y),2)+math.pow((vector.x),2))
