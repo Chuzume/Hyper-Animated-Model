@@ -1,5 +1,5 @@
 
-English/[日本語](https://github.com/Chuzume/Hyper-Animated-Model/blob/master/README_ja.md)/
+English/[日本語](https://github.com/Chuzume/Hyper-Animated-Model/blob/master/README_ja.md)
 
 
 # Hyper-Animated-Model
