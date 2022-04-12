@@ -26,4 +26,5 @@ https://user-images.githubusercontent.com/46894504/162917469-ef9a9f93-cf2c-4328-
 - Most of the script comment outs are in Japanese only
 - Animation issues when FPS is 60 or higher  
      If you run into this problems, try changing the stiffness value on line 34 of the "script.lua".
+     As an example, try 0.1 for 240 Fps.
 - Does not support armor
