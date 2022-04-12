@@ -5,6 +5,8 @@ English/[日本語](https://github.com/Chuzume/Hyper-Animated-Model/blob/master/
 # Hyper-Animated-Model
 "HYPER! Animated!"  
 
+[Download latest release](https://github.com/Chuzume/Hyper-Animated-Model/releases/latest/download/Hyper_Animated_Model.zip)
+
 # What's this
 Animated player avatar for [Figura Mod.](https://www.curseforge.com/minecraft/mc-mods/figura)  
 Also, this avatar is based on [GNs-Figura-Animated-Player](https://github.com/GNamimates/GNs-Figura-Animated-Player)
