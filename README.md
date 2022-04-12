@@ -21,5 +21,6 @@ https://user-images.githubusercontent.com/46894504/162917469-ef9a9f93-cf2c-4328-
 
 # Known issues/To do
 - Most of the script comment outs are in Japanese only
-- Animation issues when FPS is 60 or higher
--  
+- Animation issues when FPS is 60 or higher  
+     If you run into this problems, try changing the stiffness value on line 34.
+- Does not support armor
