@@ -374,17 +374,14 @@ end
             model.Body.setPos({0,-math.abs(math.sin(distWalked)),0})
             pose.armLeft = {math.sin(distWalked)*-45*moveMult,0,-15}
             pose.handLeft = {(math.sin(distWalked-1)*-10+35)*moveMult,0,0}
-
-
         if string.find(Mainhand,"air") then
             pose.armRight = {math.sin(distWalked)*45*moveMult,0,15}
             pose.handRight = {(math.sin(distWalked-1)*10+35)*moveMult,0,0}
         else
             pose.armRight = {math.sin(distWalked)*15*moveMult-25,-15,15}
-            pose.handRight = {(math.sin(distWalked-1)*10+10)*moveMult,0,0}
-        end
-                
-        else
+            pose.handRight = {(math.sin(distWalked-1)*5+25)*moveMult,0,0}
+        end            
+    else
             
 -- 歩行アニメ
         pose.head = {0,0,0}
@@ -395,11 +392,16 @@ end
         pose.body = {localVel.x*-50,math.sin(distWalked)*5,localVel.z*70}
         model.Body.setPos({0,-math.abs(math.sin(distWalked))*moveMult,0})
         pose.armLeft = {math.sin(distWalked)*-1*20,0,-10}
-        pose.armRight = {math.sin(distWalked)*1*20,0,10}
-        pose.handLeft = {(math.sin(distWalked-1)*-10+10)*moveMult,0,0}
-        pose.handRight = {(math.sin(distWalked-1)*10+10)*moveMult,0,0}
-        end
+        pose.handLeft = {(math.sin(distWalked-1)*-10+10)*moveMult,0,0}        
+        if string.find(Mainhand,"air") then
+            pose.armRight = {math.sin(distWalked)*1*20,0,10}
+            pose.handRight = {(math.sin(distWalked-1)*10+10)*moveMult,0,0}
+        else
+            pose.armRight = {math.sin(distWalked)*1*10+-10,-10,10}
+            pose.handRight = {(math.sin(distWalked-1)*5+10)*moveMult,0,0}
+        end            
     end
+end
 
 --空中アニメ
     if FallMotion == 1 then
@@ -524,20 +526,6 @@ end
     if string.find(Offhand,"torch") then
         pose.armLeft = {-model.Body.MIMIC_HEAD.getRot().x+90-15,-model.Body.MIMIC_HEAD.getRot().y,-15}
         pose.handLeft = {15,0,0}
-    end
--- 剣
-    if string.find(player.getEquipmentItem(1).getType(),"sword") then
-        pose.armRight[1] = pose.armRight[1]+ 15
-        pose.armRight[2] = pose.armRight[2]+ 15
-        pose.armRight[3] = pose.armRight[3]+ 5
-        pose.handRight[1] = 15
-    end
--- ニンジン棒など
-    if string.find(player.getEquipmentItem(1).getType(),"on_a_stick") then
-        pose.armRight[1] = pose.armRight[1]+ 15
-        pose.armRight[2] = pose.armRight[2]+ 15
-        pose.armRight[3] = pose.armRight[3]+ 5
-        pose.handRight[1] = 15
     end
 -- クロスボウ
     if string.find(player.getEquipmentItem(1).getType(),"crossbow") then
