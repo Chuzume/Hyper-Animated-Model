@@ -1,3 +1,124 @@
+
+
+
+-- the "im too dumb to find them so I made my own" section
+    function lenth3(vector)
+        return math.sqrt(math.pow((vector.x),2)+math.pow((vector.y),2)+math.pow((vector.x),2))
+    end
+
+    function lenth2(vector)
+        return math.sqrt(math.pow((vector.x),2)+math.pow((vector.y),2))
+    end
+
+    function dotp(value)
+        if value ~= 0 then
+            return value/math.abs(value)
+        end
+        return 0
+    end
+
+-- Lerped properties by Manuel_#2867
+-- Uses lerp to smooth out animations automatically, so you dont have to. Example:
+-- local cube = new_lerped_property(model.path.to.cube)
+-- then you can just set rotation, position, etc, inside tick() and it will automatically be smooth
+
+do
+    function lerp(a, b, x)
+        return a + (b - a) * x
+    end
+    
+    function lerp_3d(a, b, x)
+        return {lerp(a[1],b[1],x),lerp(a[2],b[2],x),lerp(a[3],b[3],x)}
+    end
+
+    function new_lerped_property(part)
+        local ret = {}
+        ret.prev_pos = {0,0,0}
+        ret.curr_pos = {0,0,0}
+        ret.enab_pos = false
+        ret.prev_rot = {0,0,0}
+        ret.curr_rot = {0,0,0}
+        ret.enab_rot = false
+        ret.prev_sca = {1,1,1}
+        ret.curr_sca = {1,1,1}
+        ret.enab_sca = false
+        ret.prev_uv = {0,0,0}
+        ret.curr_uv = {0,0,0}
+        ret.enab_uv = false
+        ret.prev_col = {1,1,1}
+        ret.curr_col = {1,1,1}
+        ret.enab_col = false
+        ret.prev_opa = 1
+        ret.curr_opa = 1
+        ret.enab_opa = false
+        function tick()
+            ret.prev_pos = ret.curr_pos
+            ret.prev_rot = ret.curr_rot
+            ret.prev_sca = ret.curr_sca
+            ret.prev_uv = ret.curr_uv
+            ret.prev_col = ret.curr_col
+            ret.prev_opa = ret.curr_opa
+        end
+        function render(delta)
+            if ret.enab_pos then part.setPos(lerp_3d(ret.prev_pos,ret.curr_pos,delta)) end
+            if ret.enab_rot then part.setRot(lerp_3d(ret.prev_rot,ret.curr_rot,delta)) end
+            if ret.enab_sca then part.setScale(lerp_3d(ret.prev_sca,ret.curr_sca,delta)) end
+            if ret.enab_uv then part.setUV(lerp_3d(ret.prev_uv,ret.curr_uv,delta)) end
+            if ret.enab_col then part.setColor(lerp_3d(ret.prev_col,ret.curr_col,delta)) end
+            if ret.enab_opa then part.setOpacity(lerp(ret.prev_opa,ret.curr_opa,delta)) end
+        end
+        local function setPos(pos)
+            ret.enab_pos = true
+            ret.curr_pos = pos
+        end
+        local function setRot(rot)
+            ret.enab_rot = true
+            ret.curr_rot = rot
+        end
+        local function setScale(scale)
+            ret.enab_sca = true
+            ret.curr_sca = scale
+        end
+        local function setUV(uv)
+            ret.enab_uv = true
+            ret.curr_uv = uv
+        end
+        local function setColor(color)
+            ret.enab_col = true
+            ret.curr_col = color
+        end
+        local function setOpacity(opacity)
+            ret.enab_opa = true
+            ret.curr_opa = opacity
+        end
+        ret.setPos = setPos
+        ret.setRot = setRot
+        ret.setScale = setScale
+        ret.setUV = setUV
+        ret.setColor = setColor
+        ret.setOpacity = setOpacity
+        return ret
+    end
+end
+
+-- 体のパーツ定義
+    --head = new_lerped_property(model.Body.MIMIC_HEAD_MAIN.offset)
+    head = new_lerped_property(model.Body.MIMIC_HEAD_MAIN.offset)
+
+    body = new_lerped_property(model.Body)
+
+    leftarm = new_lerped_property(model.Body.LeftArm)
+    rightarm = new_lerped_property(model.Body.RightArm)
+
+    lefthand = new_lerped_property(model.Body.LeftArm.LeftHand)
+    righthand = new_lerped_property(model.Body.RightArm.RightHand)
+
+    leftleg = new_lerped_property(model.Body.LeftLeg)
+    rightleg = new_lerped_property(model.Body.RightLeg)
+
+    leftfoot = new_lerped_property(model.Body.LeftLeg.LeftFoot)
+    rightfoot = new_lerped_property(model.Body.RightLeg.RightFoot)
+
 --========================================================--
 --GNs animated player by GNamimates
 --version 1.1
@@ -31,7 +152,7 @@
 
 --======CONFIG=======--
 -- I don suggest changing this one, because it can break the punching animation
-stiffness = 0.3 --the lower the value is, the smoother the blending between animation tracks is
+    stiffness = 0.7 --the lower the value is, the smoother the blending between animation tracks is
 
 -- ツルハシタイプの振り方をするアイテム
     ToolSwing = {"shovel","hoe","pickaxe","shield"}
@@ -41,6 +162,8 @@ stiffness = 0.3 --the lower the value is, the smoother the blending between anim
 
 -- Init処理
 function player_init()
+
+-- 変数を管理
     lastgrounded = false--used to simulate AI advance techology in humanity called "skipping"
     distWalked = 0.0 --used for the walking animation
     veldist = 0 --stands for "velocity distance" only for x and z tho
@@ -50,6 +173,8 @@ function player_init()
     ComboPickaxe = 100 --the time since last punch
     ComboUse = 100 --the time since last punch
     ArmMoving = 0
+    RightClicked = 0 -- Right Click 
+    BAKA = 0 -- FUCK
     GhostMode = 0 -- スペクテイターかどうか
     FallMotion = 0 -- 落下アニメ
     ThirdPersonCamera = 0 -- カメラモード
@@ -77,17 +202,23 @@ function player_init()
 
         model.Body.RightArm.RightHand.RightHandSlim.setEnabled(false)
         model.Body.LeftArm.LeftHand.LeftHandSlim.setEnabled(false)
+
+        model.MIMIC_RIGHT_ARM_fps.Slim.setEnabled(false)
     else
         model.Body.RightArm.RightArmNormal.setEnabled(false)
         model.Body.LeftArm.LeftArmNormal.setEnabled(false)
 
         model.Body.RightArm.RightHand.RightHandNormal.setEnabled(false)
         model.Body.LeftArm.LeftHand.LeftHandNormal.setEnabled(false)
+
+        model.MIMIC_RIGHT_ARM_fps.Normal.setEnabled(false)
     end
 
--- アニメ補間に必要？
+-- ポーズを定義
     pose = {
         head={0,0,0},
+        head_lock={0,0,0},
+
         body={0,0,0},
 
         armLeft={0,0,0},
@@ -104,9 +235,8 @@ function player_init()
     }
 end
 
---===== ANIMATIONS N STUFF=====--
+-- Tick処理
 function tick()
-
     time = world.getTime()
     ComboPunch = ComboPunch + 1
     ComboSword = ComboSword + 1
@@ -123,12 +253,7 @@ function tick()
     veldist = (lenth2({x=velocity.x,y=velocity.z}))
     altitudeClimbed = altitudeClimbed + velocity.y
 
--- 
---    log(client.getFPS())
---    local _, _, fpsStr = find(getFPS(), "(%d+) fps")
---    local fps = tonumber(fpsStr)
-
--- データ取得
+-- メインハンドとオフハンドのアイテムを取得
     Mainhand = player.getEquipmentItem(1).getType()
     Offhand = player.getEquipmentItem(2).getType()
 
@@ -141,12 +266,6 @@ function tick()
 -- 地上にいるならベクトルを取得
     if FallMotion == 0 or player.isUnderwater() and player.isFlying() == false then
         distWalked = distWalked + (veldist*4)
-    end
-
--- 腕を回す動作を検知
-function isAttacking2()
-    return
-        (vanilla_model.RIGHT_ARM.getOriginRot().z < 0)
     end
 
 -- アイテムの振り方を定義
@@ -190,7 +309,6 @@ function isAttacking2()
         network.ping("RightClick")
     end
 
-
 -- 地上空中チェック
     if player.isOnGround() and FallMotion == 1 then
         FallMotion = 0
@@ -208,10 +326,33 @@ function isAttacking2()
             FallMotion = 1
         end
     end
+    if renderer.isFirstPerson() then
+        model.MIMIC_RIGHT_ARM_fps.setEnabled(true)
+    else
+        model.MIMIC_RIGHT_ARM_fps.setEnabled(false)
+end
+
+-- Animate Model
+    head.setRot(lerp_3d(model.Body.MIMIC_HEAD_MAIN.offset.getRot(),pose.head,stiffness))
+
+    body.setRot(lerp_3d(model.Body.getRot(),pose.body,stiffness))
+
+    leftarm.setRot(lerp_3d(model.Body.LeftArm.getRot(),pose.armLeft,stiffness))
+    lefthand.setRot(lerp_3d(model.Body.LeftArm.LeftHand.getRot(),pose.handLeft,stiffness))
+
+    rightarm.setRot(lerp_3d(model.Body.RightArm.getRot(),pose.armRight,stiffness))
+    righthand.setRot(lerp_3d(model.Body.RightArm.RightHand.getRot(),pose.handRight,stiffness))
+
+    leftleg.setRot(lerp_3d(model.Body.LeftLeg.getRot(),pose.legLeft,stiffness))
+    rightleg.setRot(lerp_3d(model.Body.RightLeg.getRot(),pose.legRight,stiffness))
+
+    leftfoot.setRot(lerp_3d(model.Body.LeftLeg.LeftFoot.getRot(),pose.footleft,stiffness))
+    rightfoot.setRot(lerp_3d(model.Body.RightLeg.RightFoot.getRot(),pose.footRight,stiffness))
+
 
 --待機モーション
     if veldist < 0.1 then
-        pose.head = {0,0,0}
+        pose.head = {0,4,0}
         pose.legLeft = {0,0,-3}
         pose.footleft = {0,0,0}
         pose.legRight = {0,0,3}
@@ -244,6 +385,7 @@ function isAttacking2()
         else
 
 -- 歩行アニメ
+    animation.stopAll()
         pose.head = {0,0,0}
         pose.legLeft = {(math.sin(distWalked)*50+15)*moveMult,0,0}
         pose.footleft = {(math.sin(distWalked+math.rad(-(90*dotp(localVel.x+0.01))))*(45)-45)*moveMult,0,0}
@@ -256,21 +398,6 @@ function isAttacking2()
         pose.handLeft = {(math.sin(distWalked-1)*-10+10)*moveMult,0,0}
         pose.handRight = {(math.sin(distWalked-1)*10+10)*moveMult,0,0}
         end
-    end
-
---スニーク
-    if player.isSneaky() then
-        pose.head = {30,0,0}
-        pose.legLeft = {(math.sin(distWalked)*120+15)*moveMult+30,0,0}
-        pose.footleft = {(math.sin(distWalked+math.rad(-(90*dotp(localVel.x+0.01))))*(45)-45)*moveMult,0,0}
-        pose.legRight = {(math.sin(distWalked)*(-120+15))*moveMult+30,0,0}
-        pose.footRight = {(math.sin(distWalked+math.rad(-(90*dotp(localVel.x+0.01))))*-45-45)*moveMult,0,0}
-        pose.body = {localVel.x*-50-30,math.sin(distWalked)*-10,localVel.z*70}
-        model.Body.setPos({0,math.abs(math.sin(distWalked)),0})
-        pose.armLeft = {math.sin(distWalked)*-45*moveMult+25,0,0}
-        pose.armRight = {math.sin(distWalked)*45*moveMult+25,0,0}
-        pose.handLeft = {(math.sin(distWalked-1)*-22.5+25)*moveMult,0,0}
-        pose.handRight = {(math.sin(distWalked-1)*22.5+25)*moveMult,0,0}
     end
 
 --空中アニメ
@@ -319,6 +446,21 @@ function isAttacking2()
         pose.handRight = {25,0,0}
     end
 
+--スニーク
+    if player.isSneaky() then
+        pose.legLeft = {(math.sin(distWalked)*60+15)*moveMult,0,0}
+        pose.footleft = {(math.sin(distWalked+math.rad(-(90*dotp(localVel.x+0.01))))*(45)-45)*moveMult-0,0,0}
+        pose.legRight = {(math.sin(distWalked)*(-60+15))*moveMult+75,0,0}
+        pose.footRight = {(math.sin(distWalked+math.rad(-(90*dotp(localVel.x+0.01))))*-45-45)*moveMult-45,0,0}
+        pose.body = {localVel.x*-50-30,math.sin(distWalked)*-10,localVel.z*70}
+        model.Body.setPos({0,math.abs(math.sin(distWalked)),0})
+        pose.armLeft = {math.sin(distWalked)*-45*moveMult+5,0,-25}
+        pose.armRight = {math.sin(distWalked)*45*moveMult+5,0,25}
+        pose.handLeft = {(math.sin(distWalked-1)*-22.5+25)*moveMult+25,0,0}
+        pose.handRight = {(math.sin(distWalked-1)*22.5+25)*moveMult+25,0,0}
+        model.Body.setPos({0,3,0})
+    end
+
 -- はしごなどを掴んでいるとき
     if player.isClimbing() then
         pose.head = {0,0,0}
@@ -344,9 +486,8 @@ function isAttacking2()
         pose.footRight = {math.cos(distWalked*1)*15-25,0,0}
         pose.armLeft = {math.cos(distWalked*1)*10,0,math.sin(distWalked*1)*10-20}
         pose.armRight = {-math.cos(distWalked*1)*10,0,-math.sin(distWalked*1)*-10+20}
-        --pose.handLeft = {0,0,math.sin(distWalked*1)*40-40}
-        --pose.handRight = {0,0,math.sin(distWalked*-1)*-40+40}
     else
+
 -- 立ち泳ぎ
         pose.head = {0,0,0}
         pose.body = {localVel.x*-300,0,localVel.z*200}
@@ -626,15 +767,14 @@ end
 
 --===========--
 
--- もとに戻る
+-- 腕のポーズをもとに戻す
     if ComboPunch == 20 or ComboSword == 20 or ComboUse == 20 or ComboPickaxe == 20 then
         HandMoved = true
         model.Body.RightArm.RightHand.RIGHT_HELD_ITEM.setRot({0,0})
         model.Body.RightArm.RightHand.RIGHT_HELD_ITEM.setPos({0,0,0})
     end
-
 -- 右クリックイベント
-    function RightClick()
+function RightClick()
 
     -- 雑多なアイテム
         if player.isUsingItem() or string.find(Mainhand,"on_a_stick") or string.find(Mainhand,"crossbow") then
@@ -648,7 +788,6 @@ end
             end
         end
     end
-
     -- 弓 (右手)
         if player.getActiveHand() == "MAIN_HAND" and player.getActiveItem() and player.getActiveItem().getUseAction() == "BOW" then
             pose.handRight = {5,0,0}
@@ -746,64 +885,11 @@ end
         end
     end
 
-
 -- なにかはわからないけど重要らしい
         lastPos = player.getPos()
-    end
-
--- ポーズファンクション
-    function render(delta)
-        -- mode model.MIMIC_RIGHT_ARM_fps.setEnabled(renderer.isFirstPerson()) dosent work for some reason...
-        if renderer.isFirstPerson() then
-            model.MIMIC_RIGHT_ARM_fps.setEnabled(true)
-        else
-            model.MIMIC_RIGHT_ARM_fps.setEnabled(false)
-        end
-
---モデルのポーズ補間
-    model.Body.MIMIC_HEAD.offset.setRot(tableLerp(model.Body.MIMIC_HEAD.offset.getRot(),pose.head,stiffness))
-
-    model.Body.setRot(tableLerp(model.Body.getRot(),pose.body,stiffness))
-
-    model.Body.LeftArm.setRot(tableLerp(model.Body.LeftArm.getRot(),pose.armLeft,stiffness))
-    model.Body.RightArm.setRot(tableLerp(model.Body.RightArm.getRot(),pose.armRight,stiffness))
-
-    model.Body.LeftLeg.setRot(tableLerp(model.Body.LeftLeg.getRot(),pose.legLeft,stiffness))
-    model.Body.RightLeg.setRot(tableLerp(model.Body.RightLeg.getRot(),pose.legRight,stiffness))
-        
-    model.Body.LeftLeg.LeftFoot.setRot(tableLerp(model.Body.LeftLeg.LeftFoot.getRot(),pose.footleft,stiffness))
-    model.Body.RightLeg.RightFoot.setRot(tableLerp(model.Body.RightLeg.RightFoot.getRot(),pose.footRight,stiffness))
-        
-    model.Body.LeftArm.LeftHand.setRot(tableLerp(model.Body.LeftArm.LeftHand.getRot(),pose.handLeft,stiffness))
-    model.Body.RightArm.RightHand.setRot(tableLerp(model.Body.RightArm.RightHand.getRot(),pose.handRight,stiffness))
-
 end
---the "im too dumb to find them so I made my own" section
-    function lenth3(vector)
-        return math.sqrt(math.pow((vector.x),2)+math.pow((vector.y),2)+math.pow((vector.x),2))
-    end
 
-    function lenth2(vector)
-        return math.sqrt(math.pow((vector.x),2)+math.pow((vector.y),2))
-    end
-
-    function dotp(value)
-        if value ~= 0 then
-            return value/math.abs(value)
-        end
-        return 0
-    end
-
---things I borrowed
-    function lerp(a, b, x)
-        return a + (b - a) * x
-    end
-
-    function tableLerp(a, b, x)
-        return {lerp(a[1],b[1],x),lerp(a[2],b[2],x),lerp(a[3],b[3],x)}
-    end
-
--- 自分の姿を眺めながら遊べるカメラがほしい！
+-- TPS Camera 
     action_wheel.SLOT_1.setTitle("Toggle Third Person Camera")
     action_wheel.SLOT_1.setItem("minecraft:ender_pearl")
     action_wheel.SLOT_1.setFunction
