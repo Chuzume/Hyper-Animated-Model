@@ -1,6 +1,3 @@
-
-
-
 -- the "im too dumb to find them so I made my own" section
     function lenth3(vector)
         return math.sqrt(math.pow((vector.x),2)+math.pow((vector.y),2)+math.pow((vector.x),2))
@@ -101,8 +98,7 @@ do
     end
 end
 
--- 体のパーツ定義
-    --head = new_lerped_property(model.Body.MIMIC_HEAD_MAIN.offset)
+-- Define body parts
     head = new_lerped_property(model.Body.MIMIC_HEAD_MAIN.offset)
 
     body = new_lerped_property(model.Body)
@@ -125,7 +121,7 @@ end
 --adds cool animations using the one and only figura mod!
 --========================================================--
 
--- アニメに必要なもの定義
+-- Define...somethings
     PI = 3.14159
 
     LastPos2 = vectors.of({0,0,0})
@@ -137,12 +133,12 @@ end
     end
 
 
--- キー登録
+-- Define key
     attackKey = keybind.getRegisteredKeybind("key.attack")
     interactKey = keybind.getRegisteredKeybind("key.use")
     dropKey = keybind.getRegisteredKeybind("key.drop")
 
--- Ping登録
+-- Define pings
     network.registerPing("LeftClickPunch")
     network.registerPing("LeftClickSword")
     network.registerPing("LeftClickUse")
@@ -154,88 +150,85 @@ end
 -- I don suggest changing this one, because it can break the punching animation
     stiffness = 0.7 --the lower the value is, the smoother the blending between animation tracks is
 
--- ツルハシタイプの振り方をするアイテム
+-- Pickaxe type swing items
     ToolSwing = {"shovel","hoe","pickaxe","shield"}
 
--- 振らないアイテム
+-- No swing items
     NoSwing = {"air"}
 
--- Init処理
+-- Init
 function player_init()
 
--- 変数を管理
-    lastgrounded = false--used to simulate AI advance techology in humanity called "skipping"
-    distWalked = 0.0 --used for the walking animation
-    veldist = 0 --stands for "velocity distance" only for x and z tho
-    altitudeClimbed = 0 -- used for climbing animation tracks
-    ComboPunch = 100 --the time since last punch
-    ComboSword = 100 --the time since last punch
-    ComboPickaxe = 100 --the time since last punch
-    ComboUse = 100 --the time since last punch
-    ArmMoving = 0
-    RightClicked = 0 -- Right Click 
-    BAKA = 0 -- FUCK
-    GhostMode = 0 -- スペクテイターかどうか
-    FallMotion = 0 -- 落下アニメ
-    ThirdPersonCamera = 0 -- カメラモード
-    HandMoved = true --素手パンチのコンボ
-    lastArmUsed = false --false = right | true = left | purely cosmetic stuff
-    lastPos = player.getPos()
+    -- Define variables
+        lastgrounded = false--used to simulate AI advance techology in humanity called "skipping"
+        distWalked = 0.0 --used for the walking animation
+        veldist = 0 --stands for "velocity distance" only for x and z tho
+        altitudeClimbed = 0 -- used for climbing animation tracks
+        ComboPunch = 100 --the time since last punch
+        ComboSword = 100 --the time since last punch
+        ComboPickaxe = 100 --the time since last punch
+        ComboUse = 100 --the time since last punch
+        ArmMoving = 0
+        RightClicked = 0 -- Right Click 
+        FallMotion = 0 -- Fall animation
+        ThirdPersonCamera = 0 -- Camera mode
+        HandMoved = true --Unarmed punch
+        lastArmUsed = false --false = right | true = left | purely cosmetic stuff
+        lastPos = player.getPos()
 
--- バニラモデル非表示
-    for key, value in pairs(vanilla_model) do
-        value.setEnabled(false)    
-    end
+    -- Hide vanilla model & armors
+        for key, value in pairs(vanilla_model) do
+            value.setEnabled(false)    
+        end
 
-    for key, value in pairs(armor_model) do
-        value.setEnabled(false)    
-    end
+        for key, value in pairs(armor_model) do
+            value.setEnabled(false)    
+        end
 
--- スキン適用
-    model.Body.setTexture("Skin")
-    model.MIMIC_RIGHT_ARM_fps.setTexture("Skin")
+    -- Apply skin
+        model.Body.setTexture("Skin")
+        model.MIMIC_RIGHT_ARM_fps.setTexture("Skin")
 
--- スキンタイプ確認
-    if player.getModelType() == "default" then
-        model.Body.RightArm.RightArmSlim.setEnabled(false)
-        model.Body.LeftArm.LeftArmSlim.setEnabled(false)
+    -- Check skin type
+        if player.getModelType() == "default" then
+            model.Body.RightArm.RightArmSlim.setEnabled(false)
+            model.Body.LeftArm.LeftArmSlim.setEnabled(false)
 
-        model.Body.RightArm.RightHand.RightHandSlim.setEnabled(false)
-        model.Body.LeftArm.LeftHand.LeftHandSlim.setEnabled(false)
+            model.Body.RightArm.RightHand.RightHandSlim.setEnabled(false)
+            model.Body.LeftArm.LeftHand.LeftHandSlim.setEnabled(false)
 
-        model.MIMIC_RIGHT_ARM_fps.Slim.setEnabled(false)
-    else
-        model.Body.RightArm.RightArmNormal.setEnabled(false)
-        model.Body.LeftArm.LeftArmNormal.setEnabled(false)
+            model.MIMIC_RIGHT_ARM_fps.Slim.setEnabled(false)
+        else
+            model.Body.RightArm.RightArmNormal.setEnabled(false)
+            model.Body.LeftArm.LeftArmNormal.setEnabled(false)
 
-        model.Body.RightArm.RightHand.RightHandNormal.setEnabled(false)
-        model.Body.LeftArm.LeftHand.LeftHandNormal.setEnabled(false)
+            model.Body.RightArm.RightHand.RightHandNormal.setEnabled(false)
+            model.Body.LeftArm.LeftHand.LeftHandNormal.setEnabled(false)
 
-        model.MIMIC_RIGHT_ARM_fps.Normal.setEnabled(false)
-    end
+            model.MIMIC_RIGHT_ARM_fps.Normal.setEnabled(false)
+        end
 
--- ポーズを定義
-    pose = {
-        head={0,0,0},
-        head_lock={0,0,0},
+    -- Define default pose
+        pose = {
+            head={0,0,0},
 
-        body={0,0,0},
+            body={0,0,0},
 
-        armLeft={0,0,0},
-        armRight={0,0,0},
+            armLeft={0,0,0},
+            armRight={0,0,0},
 
-        legLeft={0,0,0},
-        legRight={0,0,0},
+            legLeft={0,0,0},
+            legRight={0,0,0},
 
-        handLeft={0,0,0},
-        handRight={0,0,0},
+            handLeft={0,0,0},
+            handRight={0,0,0},
 
-        footleft={0,0,0},
-        footRight={0,0,0} 
-    }
+            footleft={0,0,0},
+            footRight={0,0,0} 
+        }
 end
 
--- Tick処理
+-- Tick function
 function tick()
     time = world.getTime()
     ComboPunch = ComboPunch + 1
@@ -253,42 +246,43 @@ function tick()
     veldist = (lenth2({x=velocity.x,y=velocity.z}))
     altitudeClimbed = altitudeClimbed + velocity.y
 
--- メインハンドとオフハンドのアイテムを取得
+-- Mainhand & Offhand item data
     Mainhand = player.getEquipmentItem(1).getType()
     Offhand = player.getEquipmentItem(2).getType()
 
--- ジャンプの足
+-- Jump leg
     if player.isOnGround() ~= lastgrounded and FallMotion == 1 then--triggers once is grounded or not
         lastgrounded = player.isOnGround()--UPDATE: idk what is this for, but might be useful for the future
         distWalked = distWalked + (PI*0.4)--added skipping
     end
 
--- 地上にいるならベクトルを取得
+-- Get speed if stainding
     if FallMotion == 0 or player.isUnderwater() and player.isFlying() == false then
         distWalked = distWalked + (veldist*4)
     end
 
--- アイテムの振り方を定義
+-- Change item swing type
+-- Sword
     for I in pairs(ToolSwing) do
         if string.find(player.getEquipmentItem(1).getType(),ToolSwing[I]) then
         else
             SwingType = "Sword"
         end
 
--- ツール
+-- Tools
     for I in pairs(ToolSwing) do
         if string.find(player.getEquipmentItem(1).getType(),ToolSwing[I]) then
             SwingType = "Tool"
         end
     end
 
--- パンチ
+-- Punch
     if string.find(Mainhand,"air") then
             SwingType = "Punch"
         end
     end
 
--- Ping(左クリック)
+-- Ping(Left Click)
     if player.isUsingItem() == false and attackKey.isPressed() == true then
     -- パンチ
         if SwingType == "Punch" then
@@ -799,6 +793,7 @@ function RightClick()
         if player.isSneaky() then
             pose.armRight = {-model.Body.MIMIC_HEAD.getRot().x+110,-model.Body.MIMIC_HEAD.getRot().y+5,0}
             pose.armLeft = {-model.Body.MIMIC_HEAD.getRot().x+100,-model.Body.MIMIC_HEAD.getRot().y-45,0}
+            pose.head[1] = 25
         else
             pose.armRight = {-model.Body.MIMIC_HEAD.getRot().x+80,-model.Body.MIMIC_HEAD.getRot().y+5,0}
             pose.armLeft = {-model.Body.MIMIC_HEAD.getRot().x+70,-model.Body.MIMIC_HEAD.getRot().y-45,0}
@@ -814,6 +809,7 @@ function RightClick()
         if player.isSneaky() then
             pose.armRight = {-model.Body.MIMIC_HEAD.getRot().x+110,-model.Body.MIMIC_HEAD.getRot().y+45,0}
             pose.armLeft = {-model.Body.MIMIC_HEAD.getRot().x+100,-model.Body.MIMIC_HEAD.getRot().y-5,0}
+            pose.head[1] = 25
         else
             pose.armRight = {-model.Body.MIMIC_HEAD.getRot().x+70,-model.Body.MIMIC_HEAD.getRot().y+45,0}
             pose.armLeft = {-model.Body.MIMIC_HEAD.getRot().x+80,-model.Body.MIMIC_HEAD.getRot().y-5,0}
@@ -885,7 +881,7 @@ function RightClick()
         end
     end
 
--- なにかはわからないけど重要らしい
+-- LastPos
         lastPos = player.getPos()
 end
 
