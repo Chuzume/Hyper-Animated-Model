@@ -373,13 +373,20 @@ end
             pose.body = {localVel.x*-50-20,math.sin(distWalked)*5,localVel.z*45}
             model.Body.setPos({0,-math.abs(math.sin(distWalked)),0})
             pose.armLeft = {math.sin(distWalked)*-45*moveMult,0,-15}
-            pose.armRight = {math.sin(distWalked)*45*moveMult,0,15}
             pose.handLeft = {(math.sin(distWalked-1)*-10+35)*moveMult,0,0}
+
+
+        if string.find(Mainhand,"air") then
+            pose.armRight = {math.sin(distWalked)*45*moveMult,0,15}
             pose.handRight = {(math.sin(distWalked-1)*10+35)*moveMult,0,0}
         else
-
+            pose.armRight = {math.sin(distWalked)*15*moveMult-25,-15,15}
+            pose.handRight = {(math.sin(distWalked-1)*10+10)*moveMult,0,0}
+        end
+                
+        else
+            
 -- 歩行アニメ
-    animation.stopAll()
         pose.head = {0,0,0}
         pose.legLeft = {(math.sin(distWalked)*50+15)*moveMult,0,0}
         pose.footleft = {(math.sin(distWalked+math.rad(-(90*dotp(localVel.x+0.01))))*(45)-45)*moveMult,0,0}
@@ -453,6 +460,7 @@ end
         pose.handLeft = {(math.sin(distWalked-1)*-22.5+25)*moveMult+25,0,0}
         pose.handRight = {(math.sin(distWalked-1)*22.5+25)*moveMult+25,0,0}
         model.Body.setPos({0,3,0})
+        pose.head[1] = 25
     end
 
 -- はしごなどを掴んでいるとき
@@ -536,7 +544,7 @@ end
         pose.handLeft = {5,0,0}
         pose.handRight = {5,0,0}
     if player.isSneaky() then
-        pose.armRight = {-model.Body.MIMIC_HEAD.getRot().x+110,-model.Body.MIMIC_HEAD.getRot().y+15,0}
+        pose.armRight = {-model.Body.MIMIC_HEAD.getRot().x+110,-model.Body.MIMIC_HEAD.getRot().y+15,6}
         pose.armLeft = {-model.Body.MIMIC_HEAD.getRot().x+100,-model.Body.MIMIC_HEAD.getRot().y-45,0}
     else
         pose.armRight = {-model.Body.MIMIC_HEAD.getRot().x+80,-model.Body.MIMIC_HEAD.getRot().y+15,0}
@@ -793,7 +801,6 @@ function RightClick()
         if player.isSneaky() then
             pose.armRight = {-model.Body.MIMIC_HEAD.getRot().x+110,-model.Body.MIMIC_HEAD.getRot().y+5,0}
             pose.armLeft = {-model.Body.MIMIC_HEAD.getRot().x+100,-model.Body.MIMIC_HEAD.getRot().y-45,0}
-            pose.head[1] = 25
         else
             pose.armRight = {-model.Body.MIMIC_HEAD.getRot().x+80,-model.Body.MIMIC_HEAD.getRot().y+5,0}
             pose.armLeft = {-model.Body.MIMIC_HEAD.getRot().x+70,-model.Body.MIMIC_HEAD.getRot().y-45,0}
@@ -809,7 +816,6 @@ function RightClick()
         if player.isSneaky() then
             pose.armRight = {-model.Body.MIMIC_HEAD.getRot().x+110,-model.Body.MIMIC_HEAD.getRot().y+45,0}
             pose.armLeft = {-model.Body.MIMIC_HEAD.getRot().x+100,-model.Body.MIMIC_HEAD.getRot().y-5,0}
-            pose.head[1] = 25
         else
             pose.armRight = {-model.Body.MIMIC_HEAD.getRot().x+70,-model.Body.MIMIC_HEAD.getRot().y+45,0}
             pose.armLeft = {-model.Body.MIMIC_HEAD.getRot().x+80,-model.Body.MIMIC_HEAD.getRot().y-5,0}
