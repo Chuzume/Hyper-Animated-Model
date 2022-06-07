@@ -246,6 +246,25 @@ function tick()
     veldist = (lenth2({x=velocity.x,y=velocity.z}))
     altitudeClimbed = altitudeClimbed + velocity.y
 
+
+-- If too fast
+    if (localVel.z) > 0.5 then
+        localVel.z = 0.5
+    end
+
+    if (localVel.z) < -0.5 then
+        localVel.z = -0.5
+    end
+
+    if (localVel.x) > 0.5 then
+        localVel.x = 0.5
+    end
+
+    if (localVel.x) < -0.5 then
+        localVel.x = -0.5
+    end
+
+
 -- Mainhand & Offhand item data
     Mainhand = player.getEquipmentItem(1).getType()
     Offhand = player.getEquipmentItem(2).getType()
@@ -451,17 +470,17 @@ end
 
 --スニーク
     if player.isSneaky() then
-        pose.legLeft = {(math.sin(distWalked)*60+15)*moveMult,0,0}
-        pose.footleft = {(math.sin(distWalked+math.rad(-(90*dotp(localVel.x+0.01))))*(45)-45)*moveMult-0,0,0}
-        pose.legRight = {(math.sin(distWalked)*(-60+15))*moveMult+75,0,0}
-        pose.footRight = {(math.sin(distWalked+math.rad(-(90*dotp(localVel.x+0.01))))*-45-45)*moveMult-45,0,0}
-        pose.body = {localVel.x*-50-30,math.sin(distWalked)*-10,localVel.z*70}
+        pose.legLeft = {(math.sin(distWalked)*60+15)*moveMult-2,0,0}
+        pose.footleft = {(math.sin(distWalked+math.rad(-(90*dotp(localVel.x+0.01))))*(90))*moveMult/2-45,0,0}
+        pose.legRight = {(math.sin(distWalked)*(-60+15))*moveMult-2+75,0,0}
+        pose.footRight = {(math.sin(distWalked+math.rad(-(90*dotp(localVel.x+0.01))))*-45-45)*moveMult/2-45,0,0}
+        pose.body = {localVel.x*-50-20,math.sin(distWalked)*-10,localVel.z*70}
         model.Body.setPos({0,math.abs(math.sin(distWalked)),0})
-        pose.armLeft = {math.sin(distWalked)*-45*moveMult+5,0,-25}
-        pose.armRight = {math.sin(distWalked)*45*moveMult+5,0,25}
+        pose.armLeft = {math.sin(distWalked)*-45*moveMult+5/2,0,-25}
+        pose.armRight = {math.sin(distWalked)*45*moveMult+5/2,0,25}
         pose.handLeft = {(math.sin(distWalked-1)*-22.5+25)*moveMult+25,0,0}
         pose.handRight = {(math.sin(distWalked-1)*22.5+25)*moveMult+25,0,0}
-        model.Body.setPos({0,3,0})
+        model.Body.setPos({0,3.5,0})
         pose.head[1] = 25
     end
 
@@ -506,15 +525,6 @@ end
         pose.handRight = {0,0,0}
     end
 end
-
--- テレポート時にぐるぐるするのを修正
-    if (localVel.z) > 0.5 or (localVel.z) < -0.5 then
-        pose.body = {0,0,0}
-    end
-
-    if (localVel.x) > 0.6 or (localVel.x) < -0.6 then
-        pose.body = {0,0,0}
-    end
 
 --アイテム手持ち時の待機ポーズ
 -- 松明（右手）
