@@ -4,7 +4,7 @@
 # Hyper-Animated-Model
 『超動く！』
 
-[最新リリースのダウンロード](https://github.com/Chuzume/Hyper-Animated-Model/releases/latest/download/Hyper_Animated_Model.zip)
+[最新リリースのダウンロード](https://github.com/Chuzume/Hyper-Animated-Model/releases/latest/download/Hyper-Animated-Model.zip)
 
 # なにこれ
 [Figura Mod](https://www.curseforge.com/minecraft/mc-mods/figura)用のアバター。  
